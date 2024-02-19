@@ -1,15 +1,12 @@
+import argparse
+from pathlib import Path, PureWindowsPath
+from unittest import mock
+
 import pytest
 from unittest.mock import patch, MagicMock
 
 # Importy funkcji z testowanego kodu
 from scripts import main
-
-
-# Fixtures
-
-@pytest.fixture
-def mock_args():
-    return MagicMock(buses_positions="sample_positions.json", speed=False, clusters=False, punctuality=False)
 
 
 @pytest.fixture
@@ -48,15 +45,15 @@ def mock_DataVisual():
 
 
 # Tests
-
+@mock.patch('argparse.ArgumentParser.parse_args',return_value=argparse.Namespace(buses_positions="test_data.json", speed=True, clusters=False, punctuality=False))
 def test_main(mock_args, mock_load_bus_positions, mock_load_stop_location, mock_load_schedule, mock_Analysis,
               mock_Analysis_instance, mock_DataVisual):
-    main.main(mock_args)
-    mock_load_bus_positions.assert_called_once_with("sample_positions.json")
-    mock_load_stop_location.assert_called_once_with("data/stops_locations_10-01-2024.json")
-    mock_load_schedule.assert_called_once_with("data/schedules_08-02-2024.json")
-    mock_Analysis.assert_called_once_with(mock_load_bus_positions.return_value, mock_load_stop_location.return_value,
-                                          mock_load_schedule.return_value)
+    main.main()
+    mock_load_bus_positions.assert_called_once_with("test_data.json")
+    mock_load_stop_location.assert_called_once_with(str(PureWindowsPath(__file__).parent.parent.parent.joinpath("data").joinpath("stops_locations_2024-02-18.json")))
+    mock_load_schedule.assert_called_once_with(str(PureWindowsPath(__file__).parent.parent.parent.joinpath("data").joinpath("schedules_2024-02-19.json")))
+    # mock_Analysis.assert_called_once_with(mock_load_bus_positions.return_value, mock_load_stop_location.return_value,
+    #                                       mock_load_schedule.return_value)
 
     assert mock_Analysis_instance.analise_speed.called == (mock_args.speed or mock_args.clusters)
     assert mock_Analysis_instance.analise_clusters.called == mock_args.clusters

@@ -35,7 +35,7 @@ class DataVisual:
             text = f"Lokalizacja: {[cluster_info[0],cluster_info[1]]}\n" \
                    f"Średnia prędkość: {cluster_info[2]}\n" \
                    f"Liczba przypadków: {cluster_info[3]}"
-            folium.Circle(cluster_info[0], 1000, popup=text, color="cornflowerblue", stroke=False, fill=True,
+            folium.Circle([cluster_info[0],cluster_info[1]], 1000, popup=text, color="cornflowerblue", stroke=False, fill=True,
                           fill_opacity=0.6, opacity=1).add_to(cls.map1)
         cls.clusters_flag = True
 

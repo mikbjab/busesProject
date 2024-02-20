@@ -36,7 +36,6 @@ def main(args=None):
         dv.DataVisual.save_map()
     if args.punctuality:
         punctuality_filename=args.buses_positions.replace("data_", "punctuality_")
-        analysis.check_punctuality(punctuality_filename)
         dv.DataVisual.show_punctuality(analysis.check_punctuality(punctuality_filename))
 
 

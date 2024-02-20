@@ -104,7 +104,6 @@ class Analysis:
         """ Sprawdzenie, czy wokół danego przystanku (schedule_row) był autobus tej linii i tej brygady,
             'w okolicy' definiujemy jako odległość 400 m w każdą stronę (z uwagi na pozycje aktualizowane co minutę)
         """
-        logging.info("Analysing row")
         bus_positions = self.bus_data[(self.bus_data["Brigade"] == schedule_row.brygada)
                                       & (self.bus_data["Lines"] == schedule_row.linia)]
         if bus_positions.empty:
@@ -115,6 +114,7 @@ class Analysis:
 
         time_range = get_time_range(schedule_row["czas"])
         index = pd.DatetimeIndex(bus_positions['Time'])
+        logging.info(f"Analysing {stop_position['szer_geo']},{stop_position['dlug_geo']}")
         filtered_bus_positions = bus_positions.iloc[index.indexer_between_time(time_range[0], time_range[1])]
         for index, bus_row in filtered_bus_positions.iterrows():
             stop_distance = haversine(bus_row["Lat"], bus_row["Lon"],
@@ -139,9 +139,11 @@ class Analysis:
         logging.info("Analysing all buses and stations")
 
         filtered_schedule["punctuality"] = filtered_schedule.apply(self.is_near, axis=1)
-        on_time_statistics = {-1: (filtered_schedule["punctuality"] == -1).count(),
-                              0: (filtered_schedule["punctuality"] == 0).count(),
-                              1: (filtered_schedule["punctuality"] == 1).count()}
+        temp_list=filtered_schedule["punctuality"].value_counts().to_list()
+        logging.info(str(temp_list))
+        on_time_statistics = {-1: int(temp_list[1]),
+                              0: int(temp_list[2]),
+                              1: int(temp_list[0])}
 
         logging.info("Finished analysis")
         with open(filename, "w") as file:

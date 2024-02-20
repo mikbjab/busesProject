@@ -46,7 +46,9 @@ class DataVisual:
 
     @classmethod
     def show_punctuality(cls, punctuality_histogram):
-        plt.bar(["Na czas", "Spóźnione"], [punctuality_histogram["On time"], punctuality_histogram["Late"]])
+        plt.bar([f"Niezarejestrowano\n{punctuality_histogram['-1']}",f"Na czas\n{punctuality_histogram['0']}", f"Spóźnione\n{punctuality_histogram['1']}"], [punctuality_histogram['-1'],punctuality_histogram['0'], punctuality_histogram['1']])
+        plt.show()
+
 
 
 if __name__ == '__main__':
